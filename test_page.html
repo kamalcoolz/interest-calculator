@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Interest Calculator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Simple & Compound Interest Calculator</h1>
+  <label>Principal:</label>
+  <input type="number" id="principal" value="1000"><br><br>
+
+  <label>Rate (% per year):</label>
+  <input type="number" id="rate" value="5"><br><br>
+
+  <label>Time (years):</label>
+  <input type="number" id="time" value="5"><br><br>
+
+  <label>Compounding per year (for compound interest):</label>
+  <input type="number" id="n" value="1"><br><br>
+
+  <label>Interest Type:</label>
+  <select id="type">
+    <option value="simple">Simple Interest</option>
+    <option value="compound">Compound Interest</option>
+  </select><br><br>
+
+  <button onclick="calculateInterest()">Calculate</button>
+
+  <h2 id="result"></h2>
+
+  <canvas id="interestChart" width="400" height="200"></canvas>
+
+  <script>
+    function calculateInterest() {
+      const principal = parseFloat(document.getElementById('principal').value);
+      const rate = parseFloat(document.getElementById('rate').value) / 100;
+      const time = parseFloat(document.getElementById('time').value);
+      const n = parseFloat(document.getElementById('n').value);
+      const type = document.getElementById('type').value;
+
+      let amounts = [];
+      let labels = [];
+      let totalAmount;
+
+      if (type === 'simple') {
+        totalAmount = principal * (1 + rate * time);
+        for (let t = 1; t <= time; t++) {
+          amounts.push(principal * (1 + rate * t));
+          labels.push(t);
+        }
+      } else {
+        totalAmount = principal * Math.pow(1 + rate / n, n * time);
+        for (let t = 1; t <= time; t++) {
+          amounts.push(principal * Math.pow(1 + rate / n, n * t));
+          labels.push(t);
+        }
+      }
+
+      document.getElementById('result').innerText = 'Total Amount after ' + time + ' years: ' + totalAmount.toFixed(2);
+
+      const ctx = document.getElementById('interestChart').getContext('2d');
+      if (window.interestChart) window.interestChart.destroy();
+      window.interestChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Amount over time',
+            data: amounts,
+            borderColor: 'blue',
+            fill: false
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
